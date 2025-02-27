@@ -74,7 +74,7 @@ const LoginWithOTP = () => {
       setLoading(false);
 
       if (res.data.success) {
-        message.success("🎉 Login Successful!");
+        message.success("🎉 Login Successful! test");
 
         // ✅ Store JWT token in localStorage
         localStorage.setItem("token", res.data.token);
