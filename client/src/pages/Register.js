@@ -29,7 +29,7 @@ const Register = () => {
         <Form layout="vertical" onFinish={onfinishhandler} className="card p-4">
           <h1> Register</h1>
 
-          <Form.Item label="name" name="name">
+          <Form.Item label="Name" name="name">
             <Input type="text" required />
           </Form.Item>
           <Form.Item label="Email" name="email">
