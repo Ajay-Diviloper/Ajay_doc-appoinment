@@ -1,0 +1,37 @@
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Production build
+build/
+dist/
+public/
+
+# Coverage directory used by testing tools
+coverage/
+
+# Miscellaneous
+.DS_Store
+.pnp/
+.pnp.js
+
+# IDE or editor directories
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# System files
+Thumbs.db
