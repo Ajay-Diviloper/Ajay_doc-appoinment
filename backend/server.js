@@ -19,7 +19,7 @@ app.use(morgan("dev")); // Logging middleware
 // API Routes
 app.use("/api", require("./routes/userroutes"));
 app.use("/api/admin", require("./routes/adminroutes"));
-app.use("/api/doctor", require("./routes/doctorroutes"));
+app.use("/api/doctor", require("./routes/Doctorroutes"));
 
 app.use("/api/otp", require("./routes/otpRoutes")); // ✅ This is the correct OTP route
 
