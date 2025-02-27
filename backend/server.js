@@ -24,11 +24,11 @@ app.use("/api/doctor", require("./routes/doctorroutes"));
 app.use("/api/otp", require("./routes/otpRoutes")); // ✅ This is the correct OTP route
 
 // Serve frontend (React build folder)
-app.use(express.static(path.join(__dirname, "./client/build")));
+app.use(express.static(path.join(__dirname, "../client/build")));
 
 // Serve frontend for any unmatched routes
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "./client/build", "index.html"));
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });
 
 // Default home route
