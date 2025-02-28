@@ -1,32 +1,52 @@
 import React from "react";
 import "../style/Registerstyles.css";
-import { Form, Input, message } from "antd";
+import { Alert, Form, Input, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { showLoading, hideLoading } from "../redux/features/alertslice";
+import { lruMemoize } from "@reduxjs/toolkit";
 
 const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const onfinishhandler = async (values) => {
+  const onFinishHandler = async (values) => {
     try {
       dispatch(showLoading());
       const res = await axios.post("/api/register", values);
       dispatch(hideLoading());
-      if (res.data.success) {
-        message.success("Register successfully");
 
+      if (res.data.success) {
+        message.success("Registered successfully");
         navigate("/login");
       }
     } catch (error) {
       dispatch(hideLoading());
+
+      if (error.response) {
+        // Server responded with a status other than 2xx
+        const { status, data } = error.response;
+
+        if (status === 400) {
+          message.error("All fields are required");
+        } else if (status === 409) {
+          message.error("Email already registered");
+        } else if (status === 403) {
+          message.error("password not fullfill critetria");
+        } else {
+          message.error(data.message || "Registration failed");
+        }
+      } else {
+        // Network error or server didn't respond
+        message.error("Network error. Please try again later.");
+      }
     }
   };
+
   return (
     <>
       <div className=" form-container">
-        <Form layout="vertical" onFinish={onfinishhandler} className="card p-4">
+        <Form layout="vertical" onFinish={onFinishHandler} className="card p-4">
           <h1> Register</h1>
 
           <Form.Item label="Name" name="name">

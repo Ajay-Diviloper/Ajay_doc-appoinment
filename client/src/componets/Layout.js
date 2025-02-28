@@ -1,20 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "../style/layoutstyle.css";
-import { adminmenu, usermenu } from "../Data/Data";
-import { Link, useNavigate } from "react-router-dom";
+import { adminmenu, usermenu, doctorMenu } from "../Data/Data";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { Badge, message } from "antd";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/features/userslice";
+import { setDoctor } from "../redux/features/doctorslice";
+
+import axios from "axios";
 
 const Layout = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { doctor, setdoctor } = useState();
+  const params = useParams();
   const { user } = useSelector((state) => state.user);
+  // const { doctor } = useSelector((state) => state.doctor);
   const location = useLocation();
 
+  // get doctor info
+  const doctorinfo = async () => {
+    try {
+      const res = await axios.post(
+        "./api/doctor/getdocinfor",
+        {
+          userid: params.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (res.data.success) {
+        setdoctor(res.data.data);
+      } else {
+        message.error("Failed to fetch doctor details");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   //doctor menu
+
+  useEffect(() => {
+    doctorinfo();
+  }, [params.id]);
 
   const docmenu = [
     {
@@ -51,7 +84,8 @@ const Layout = ({ children }) => {
 
   const handlelogout = () => {
     localStorage.clear();
-    dispatch(setUser(null)); // Clear user state in Redux
+    dispatch(setUser(null));
+    dispatch(setDoctor(null)); // Clear user state in Redux
     message.success("Logout successfully");
     navigate("/login");
   };

@@ -4,42 +4,63 @@ const jwt = require("jsonwebtoken");
 const doctormodel = require("../models/doctormodel");
 const appointmodel = require("../models/appointmodel");
 const sendmailverification = require("../utils/sendmailverification");
-// const moment = require("moment");
+const passwordSchema = require("../utils/password");
 
 const registercontroller = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
+    // Validate input
     if (!name || !email || !password) {
-      return res.status(500).send({
+      return res.status(400).json({
         success: false,
-        message: "all filed required",
+        message: "All fields are required",
       });
     }
-    //check user
-    const existing = await usermodel.findOne({ email });
-    if (existing)
-      return res.status(500).send({
-        success: false,
-        message: "email already Registered",
-      });
 
-    //hashing Password
+    // Check if user already exists
+    const existingUser = await usermodel.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        message: "Email already registered",
+      });
+    }
+
+    // Validate password strength
+    const validationErrors = passwordSchema.validate(password, { list: true });
+    if (validationErrors.length) {
+      return res.status(403).json({
+        success: false,
+        message: "Password does not meet the required criteria.",
+        errors: validationErrors,
+      });
+    }
+
+    // Hash password
     const salt = bcrypt.genSaltSync(10);
-    const hashpassword = await bcrypt.hash(password, salt);
-    //create new user
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user
     const user = await usermodel.create({
       name,
       email,
-      password: hashpassword,
+      password: hashedPassword,
     });
 
-    res.status(201).send({
+    // Respond with success
+    return res.status(201).json({
       success: true,
-      message: "Successfully Registered",
+      message: "Successfully registered",
       user,
     });
-  } catch (err) {
-    console.log("error", err);
+  } catch (error) {
+    console.error("Registration error:", error);
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 
